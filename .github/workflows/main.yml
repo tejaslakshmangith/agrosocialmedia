@@ -23,15 +23,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
+      # Build step - replace with your project's build commands
+      - name: Build site
+        run: |
+          # example for npm-based site
+          npm ci
+          npm run build
+        # ensure the build output directory below matches your project
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
-      
+          # point to your build output, e.g. ./public or ./build or ./docs
+          path: ./public
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          enablement: true
