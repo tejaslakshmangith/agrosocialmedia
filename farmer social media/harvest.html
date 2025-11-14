@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Harvest Readiness - AgroSocialMedia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* theme + base (same as irrigation.html, shortened) */
+        :root {
+            --bg-main: #06141f;
+            --bg-main-alt: #020b12;
+            --bg-card: rgba(3,12,24,0.95);
+            --bg-card-soft: rgba(2,10,18,0.98);
+            --text-main: #e8f5e9;
+            --text-muted: #b0bec5;
+            --accent: #66bb6a;
+            --accent-strong: #43a047;
+            --accent-soft: rgba(129,199,132,0.16);
+            --border-subtle: rgba(255,255,255,0.12);
+        }
+
+        body.theme-light {
+            --bg-main: #e8f5e9;
+            --bg-main-alt: #f5f7fa;
+            --bg-card: rgba(255,255,255,0.95);
+            --bg-card-soft: #ffffff;
+            --text-main: #263238;
+            --text-muted: #607d8b;
+            --accent: #2e7d32;
+            --accent-strong: #43a047;
+            --accent-soft: rgba(56,142,60,0.12);
+            --border-subtle: rgba(0,0,0,0.08);
+        }
+
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html,body{height:100%;}
+        body{
+            font-family:'Segoe UI',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+            background:
+                radial-gradient(circle at 0% 0%,rgba(56,142,60,0.18),transparent 55%),
+                radial-gradient(circle at 100% 100%,rgba(3,155,229,0.18),transparent 55%),
+                linear-gradient(135deg,var(--bg-main),var(--bg-main-alt) 45%,#040912);
+            color:var(--text-main);
+            line-height:1.7;
+        }
+        body::before{
+            content:"";position:fixed;inset:0;pointer-events:none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+            background-size:38px 38px;opacity:0.35;mix-blend-mode:soft-light;z-index:-1;
+        }
+        .header{
+            background:linear-gradient(120deg,rgba(56,142,60,0.96),rgba(129,199,132,0.9));
+            color:#fdfdfd;padding:0.9rem 0;box-shadow:0 12px 30px rgba(0,0,0,0.55);
+            position:sticky;top:0;z-index:1000;backdrop-filter:blur(18px);
+        }
+        .nav-container{
+            max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;
+            align-items:center;flex-wrap:wrap;gap:0.75rem;padding:0 1.2rem;
+        }
+        .logo{font-size:1.6rem;font-weight:700;display:flex;align-items:center;gap:0.6rem;}
+        .logo i{padding:0.45rem;border-radius:999px;background:rgba(255,255,255,0.22);
+            box-shadow:0 0 18px rgba(255,255,255,0.35);}
+        .nav-menu{display:flex;gap:1.3rem;align-items:center;}
+        .nav-item{
+            cursor:pointer;padding:0.4rem 1.1rem;border-radius:999px;
+            transition:all 0.25s ease;display:flex;align-items:center;gap:0.45rem;
+            font-size:0.98rem;text-decoration:none;color:inherit;background:rgba(255,255,255,0.06);
+        }
+        .nav-item:hover,.nav-item.active{
+            background-color:rgba(255,255,255,0.25);transform:translateY(-1px);
+            box-shadow:0 8px 22px rgba(0,0,0,0.22);
+        }
+        .nav-right{display:flex;align-items:center;gap:0.6rem;}
+        .theme-toggle{
+            padding:0.3rem 0.8rem;border-radius:999px;border:1px solid rgba(255,255,255,0.8);
+            background:rgba(255,255,255,0.12);color:#ffffff;cursor:pointer;font-size:0.86rem;
+            display:flex;align-items:center;gap:0.4rem;transition:all 0.25s ease;
+        }
+        .theme-toggle:hover{background:#ffffff;color:#388e3c;}
+        .page-shell{max-width:1100px;margin:1.8rem auto 2.2rem;padding:0 1.2rem;}
+        .grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:1.4rem;}
+        .glass-card{
+            background:radial-gradient(circle at top left,rgba(255,255,255,0.08),var(--bg-card));
+            border-radius:18px;padding:1.6rem 1.5rem;box-shadow:0 18px 36px rgba(0,0,0,0.55);
+            border:1px solid var(--border-subtle);backdrop-filter:blur(18px);
+        }
+        h1{margin-bottom:0.4rem;font-size:1.7rem;}
+        h2{margin-bottom:0.4rem;font-size:1.3rem;}
+        p{color:var(--text-muted);margin-bottom:0.9rem;}
+        label{display:block;margin-bottom:0.35rem;}
+        select{
+            width:100%;padding:0.6rem 0.75rem;border-radius:10px;
+            border:1px solid var(--border-subtle);background:var(--bg-card-soft);
+            color:var(--text-main);margin-bottom:0.8rem;
+        }
+        .checklist{list-style:none;padding-left:0;margin:0.4rem 0;}
+        .checklist li{margin:0.3rem 0;display:flex;gap:0.5rem;align-items:flex-start;}
+        .bullet{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:0.35rem;}
+        .grade{font-weight:600;}
+        .grade-result{margin-top:0.7rem;font-size:0.95rem;}
+        @media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body class="theme-dark">
+<header class="header">
+    <div class="nav-container">
+        <div class="logo"><i class="fas fa-seedling"></i><span>AgroSocialMedia</span></div>
+        <nav class="nav-menu">
+            <a class="nav-item" href="farmer.html"><i class="fas fa-home"></i>Home</a>
+            <a class="nav-item" href="irrigation.html"><i class="fas fa-tint"></i>Irrigation</a>
+            <a class="nav-item active" href="harvest.html"><i class="fas fa-tractor"></i>Harvest</a>
+            <a class="nav-item" href="community.html"><i class="fas fa-users"></i>Community</a>
+        </nav>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-toggle">
+                <i class="fas fa-moon"></i><span>Night</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell">
+    <section class="grid-2">
+        <div class="glass-card">
+            <h1>Harvest Readiness</h1>
+            <p>Quick checklist to understand if your crop is ready for harvest.</p>
+
+            <label for="harvestCrop">Crop</label>
+            <select id="harvestCrop">
+                <option value="">Select crop</option>
+                <option value="paddy">Paddy</option>
+                <option value="wheat">Wheat</option>
+                <option value="vegetables">Vegetables</option>
+            </select>
+
+            <ul id="checklist" class="checklist">
+                <!-- filled by JS -->
+            </ul>
+        </div>
+
+        <div class="glass-card">
+            <h2>Quality Grade Idea</h2>
+            <p>Use this simple grading idea before selling or storing your produce.</p>
+            <ul class="checklist">
+                <li><span class="bullet"></span><span><span class="grade">Grade A:</span> Healthy, uniform size, no visible pest marks.</span></li>
+                <li><span class="bullet"></span><span><span class="grade">Grade B:</span> Minor spots but safe; sell quickly.</span></li>
+                <li><span class="bullet"></span><span><span class="grade">Grade C:</span> Damaged or diseased; separate and avoid mixing.</span></li>
+            </ul>
+            <div id="gradeHint" class="grade-result"></div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // theme toggle same as irrigation.html
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const body = document.body;
+    function applyTheme(theme){
+        body.classList.remove('theme-light','theme-dark');
+        body.classList.add(theme);
+        if(theme==='theme-light'){
+            themeToggleBtn.innerHTML='<i class="fas fa-moon"></i><span>Night</span>';
+        }else{
+            themeToggleBtn.innerHTML='<i class="fas fa-sun"></i><span>Light</span>';
+        }
+        localStorage.setItem('raythu-theme',theme);
+    }
+    const savedTheme = localStorage.getItem('raythu-theme') || 'theme-dark';
+    applyTheme(savedTheme);
+    themeToggleBtn.addEventListener('click',()=>{
+        const current = body.classList.contains('theme-light')?'theme-light':'theme-dark';
+        const next = current==='theme-light'?'theme-dark':'theme-light';
+        applyTheme(next);
+    });
+
+    // harvest checklist logic
+    const harvestCrop = document.getElementById('harvestCrop');
+    const checklist = document.getElementById('checklist');
+    const gradeHint = document.getElementById('gradeHint');
+
+    const data = {
+        paddy:[
+            '80–85% of grains in panicle turned golden.',
+            'Grains are hard when pressed between teeth.',
+            'Field soil is firm enough for harvester or labour to walk.'
+        ],
+        wheat:[
+            'Plants have turned yellow and dry; very little green left.',
+            'Grain moisture around 14–16% (hard and brittle).',
+            'Kernels break cleanly when pressed.'
+        ],
+        vegetables:[
+            'Fruits/vegetables reached full colour and size for the variety.',
+            'No cracking or over-maturity (seeds too hard inside).',
+            'Pick in early morning for better shelf life.'
+        ]
+    };
+
+    harvestCrop.addEventListener('change',()=>{
+        const val = harvestCrop.value;
+        checklist.innerHTML='';
+        gradeHint.textContent='';
+        if(!val) return;
+        data[val].forEach(t=>{
+            const li=document.createElement('li');
+            li.innerHTML='<span class="bullet"></span><span>'+t+'</span>';
+            checklist.appendChild(li);
+        });
+        gradeHint.textContent='Tip: Take 10 random samples from the field and check these points before harvesting entire area.';
+    });
+</script>
+</body>
+</html>

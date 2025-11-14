@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSocialMedia - Farmer Social Network</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== THEME TOKENS ===== */
+        :root {
+            --bg-main: #06141f;
+            --bg-main-alt: #020b12;
+            --bg-card: rgba(3,12,24,0.95);
+            --bg-card-soft: rgba(2,10,18,0.98);
+            --text-main: #e8f5e9;
+            --text-muted: #b0bec5;
+            --accent: #66bb6a;
+            --accent-strong: #43a047;
+            --accent-soft: rgba(129,199,132,0.16);
+            --border-subtle: rgba(255,255,255,0.12);
+        }
+
+        body.theme-light {
+            --bg-main: #e8f5e9;
+            --bg-main-alt: #f5f7fa;
+            --bg-card: rgba(255,255,255,0.95);
+            --bg-card-soft: #ffffff;
+            --text-main: #263238;
+            --text-muted: #607d8b;
+            --accent: #2e7d32;
+            --accent-strong: #43a047;
+            --accent-soft: rgba(56,142,60,0.12);
+            --border-subtle: rgba(0,0,0,0.08);
+        }
+
+        /* ===== GLOBAL RESET & BASE ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(56,142,60,0.18), transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(3,155,229,0.18), transparent 55%),
+                linear-gradient(135deg, var(--bg-main), var(--bg-main-alt) 45%, #040912);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        body::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            pointer-events:none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size:38px 38px;
+            opacity:0.35;
+            mix-blend-mode:soft-light;
+            z-index:-1;
+        }
+
+        /* ===== HEADER / NAV ===== */
+        .header {
+            background: linear-gradient(120deg, rgba(56,142,60,0.96), rgba(129,199,132,0.9));
+            color:#fdfdfd;
+            padding:0.9rem 0;
+            box-shadow:0 12px 30px rgba(0,0,0,0.55);
+            position:sticky; top:0; z-index:1000;
+            backdrop-filter:blur(18px);
+        }
+        .nav-container {
+            max-width:1180px; margin:0 auto;
+            display:flex; justify-content:space-between; align-items:center;
+            flex-wrap:wrap; gap:0.75rem; padding:0 1.2rem;
+        }
+        .logo { font-size:1.6rem; font-weight:700; display:flex; align-items:center; gap:0.6rem; }
+        .logo i {
+            padding:0.45rem; border-radius:999px;
+            background:rgba(255,255,255,0.22);
+            box-shadow:0 0 18px rgba(255,255,255,0.35);
+        }
+        .nav-menu { display:flex; gap:1.3rem; align-items:center; }
+        .nav-item {
+            cursor:pointer; padding:0.4rem 1.1rem; border-radius:999px;
+            transition:all 0.25s ease;
+            display:flex; align-items:center; gap:0.45rem;
+            font-size:0.98rem; text-decoration:none; color:inherit;
+            background:rgba(255,255,255,0.06);
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color:rgba(255,255,255,0.25);
+            transform:translateY(-1px);
+            box-shadow:0 8px 22px rgba(0,0,0,0.22);
+        }
+
+        .nav-right {
+            display:flex; align-items:center; gap:0.6rem;
+        }
+
+        .lang-selector { display:flex; gap:0.4rem; }
+        .lang-btn {
+            padding:0.3rem 0.85rem;
+            border:1px solid rgba(255,255,255,0.8);
+            background:transparent; color:#ffffff;
+            border-radius:999px; cursor:pointer;
+            font-size:0.86rem; transition:all 0.25s ease;
+        }
+        .lang-btn:hover, .lang-btn.active { background:#ffffff; color:#388e3c; }
+
+        /* Theme toggle */
+        .theme-toggle {
+            padding:0.3rem 0.8rem;
+            border-radius:999px;
+            border:1px solid rgba(255,255,255,0.8);
+            background:rgba(255,255,255,0.12);
+            color:#ffffff;
+            cursor:pointer;
+            font-size:0.86rem;
+            display:flex; align-items:center; gap:0.4rem;
+            transition:all 0.25s ease;
+        }
+        .theme-toggle:hover {
+            background:#ffffff;
+            color:#388e3c;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            max-width:1180px;
+            margin:1.7rem auto 2.2rem;
+            display:grid;
+            grid-template-columns:260px minmax(0, 1.6fr) 310px;
+            gap:2rem;
+            padding:0 1.2rem;
+        }
+
+        .glass-card {
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.08), var(--bg-card));
+            border-radius:18px;
+            padding:1.6rem 1.5rem;
+            box-shadow:0 18px 36px rgba(0,0,0,0.55);
+            border:1px solid var(--border-subtle);
+            backdrop-filter:blur(18px);
+        }
+
+        /* ===== LEFT SIDEBAR ===== */
+        .sidebar {
+            position:sticky; top:90px; height:fit-content;
+        }
+        .sidebar h3 {
+            color:var(--accent);
+            margin-bottom:1.2rem; font-size:1.05rem;
+            letter-spacing:0.04em; text-transform:uppercase;
+        }
+        .sidebar-item {
+            display:flex; align-items:center; gap:0.8rem;
+            padding:0.85rem 0.9rem; margin:0.4rem 0;
+            border-radius:12px; cursor:pointer;
+            transition:all 0.25s ease;
+            font-size:0.98rem; text-decoration:none;
+            color:var(--text-main);
+        }
+        .sidebar-item:hover {
+            background:var(--accent-soft);
+            transform:translateX(6px);
+        }
+        .sidebar-item i { color:var(--accent); font-size:1.1rem; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content { padding:1.8rem 1.7rem 2rem; }
+
+        /* Post creator – improved visibility */
+        .post-creator {
+            /* slightly brighter background for night mode */
+            background: rgba(40, 80, 60, 0.35);
+            border-radius: 16px;
+            padding: 1.4rem 1.3rem;
+            margin-bottom: 1.8rem;
+            border: 1px dashed rgba(198, 255, 214, 0.85);
+        }
+        .post-input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(210, 255, 220, 0.95);
+            border-radius: 12px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 90px;
+            margin-bottom: 1rem;
+            background: rgba(3, 18, 10, 0.96);
+            /* brighter text for night mode */
+            color: #f9fff9;
+        }
+        .post-input::placeholder {
+            color: rgba(220, 245, 230, 0.75);
+        }
+        /* in light theme keep it clean and readable */
+        body.theme-light .post-creator {
+            background: rgba(232, 245, 233, 0.9);
+            border-color: rgba(129, 199, 132, 0.9);
+        }
+        body.theme-light .post-input {
+            background: #ffffff;
+            color: #263238;
+            border-color: rgba(129, 199, 132, 0.9);
+        }
+        body.theme-light .post-input::placeholder {
+            color: rgba(120, 144, 156, 0.9);
+        }
+
+        .post-actions { display:flex; gap:0.8rem; flex-wrap:wrap; }
+        .action-btn {
+            padding:0.7rem 1.3rem;
+            border:none; border-radius:999px;
+            cursor:pointer; font-size:0.93rem;
+            display:flex; align-items:center; gap:0.55rem;
+            transition:all 0.25s ease; white-space:nowrap;
+        }
+        .btn-primary {
+            background:linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color:#02110a; font-weight:600;
+            box-shadow:0 0 18px rgba(102,187,106,0.55);
+        }
+        .btn-secondary {
+            background:rgba(224,242,241,0.06);
+            color:var(--text-main);
+            border:1px solid rgba(200,230,201,0.5);
+        }
+        .action-btn:hover {
+            transform:translateY(-1px);
+            box-shadow:0 10px 24px rgba(0,0,0,0.45);
+        }
+
+        #posts-container {
+            display:flex; flex-direction:column; gap:1.4rem;
+        }
+        .post {
+            background:var(--bg-card-soft);
+            border-radius:16px;
+            padding:1.4rem 1.3rem 1.1rem;
+            box-shadow:0 10px 26px rgba(0,0,0,0.65);
+            border-left:4px solid var(--accent);
+        }
+        .post-header {
+            display:flex; align-items:center; gap:0.9rem; margin-bottom:0.9rem;
+        }
+        .avatar {
+            width:46px; height:46px; border-radius:50%;
+            background:linear-gradient(135deg, var(--accent), var(--accent-strong));
+            display:flex; align-items:center; justify-content:center;
+            color:#06141f; font-weight:bold; font-size:1.05rem;
+        }
+        .post-info h4 { color:var(--accent); margin-bottom:0.15rem; }
+        .post-info .time { color:var(--text-muted); font-size:0.86rem; }
+
+        .post-content { margin-bottom:0.8rem; }
+        .post-text-block { margin-bottom:0.6rem; }
+        .post-text-block p { margin:0.05rem 0; }
+
+        .post-image {
+            width:100%; max-height:360px; object-fit:cover;
+            border-radius:12px; margin:0.9rem 0 0.7rem;
+            border:1px solid var(--border-subtle);
+        }
+        .post-tags {
+            display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.7rem;
+        }
+        .tag {
+            background:rgba(0,191,165,0.13);
+            color:#80cbc4;
+            padding:0.3rem 0.85rem;
+            border-radius:999px; font-size:0.8rem;
+            border:1px solid rgba(128,203,196,0.6);
+        }
+        .post-stats {
+            display:flex; justify-content:space-between; align-items:center;
+            padding-top:0.7rem;
+            border-top:1px solid var(--border-subtle);
+            font-size:0.86rem;
+        }
+        .stat-item {
+            display:flex; align-items:center; gap:0.45rem;
+            cursor:pointer; padding:0.35rem 0.7rem;
+            border-radius:999px; transition:all 0.25s ease;
+            color:var(--text-muted);
+        }
+        .stat-item:hover { background-color:var(--accent-soft); }
+
+        /* ===== RIGHT SIDEBAR ===== */
+        .right-sidebar { display:flex; flex-direction:column; gap:1.4rem; }
+        .widget.glass-card { padding:1.4rem 1.3rem; }
+        .widget h3 {
+            color:var(--accent); margin-bottom:0.85rem;
+            font-size:1.02rem; letter-spacing:0.04em; text-transform:uppercase;
+        }
+        .weather-widget { text-align:center; }
+        .weather-icon { font-size:2.4rem; color:#ffca28; margin-bottom:0.7rem; }
+        .weather-info h4 { color:var(--accent); margin-bottom:0.25rem; font-size:1.3rem; }
+        .weather-info p { margin:0.1rem 0; }
+        .weather-info small { display:block; margin-top:0.4rem; color:var(--text-muted); font-size:0.82rem; }
+
+        .knowledge-item {
+            display:flex; align-items:flex-start; gap:0.9rem;
+            padding:0.8rem 0.9rem; margin:0.45rem 0;
+            background:rgba(224,247,250,0.06);
+            border-radius:12px; cursor:pointer;
+            transition:all 0.25s ease;
+        }
+        .knowledge-item:hover { background:var(--accent-soft); transform:translateX(4px); }
+        .knowledge-icon {
+            width:38px; height:38px;
+            background:linear-gradient(135deg, var(--accent-strong), var(--accent));
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            color:#051217; font-size:1.1rem; flex-shrink:0;
+        }
+        .small-avatar { width:32px; height:32px; font-size:0.78rem; }
+
+        /* ===== UTILITIES ===== */
+        .hidden { display:none !important; }
+        .fade-in { animation:fadeIn 0.4s ease-out; }
+        @keyframes fadeIn {
+            from{opacity:0; transform:translateY(10px);}
+            to{opacity:1; transform:translateY(0);}
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width:1024px) {
+            .main-container {
+                grid-template-columns:minmax(0,1fr);
+                gap:1.4rem;
+            }
+            .sidebar { position:static; }
+        }
+        @media (max-width:768px) {
+            .nav-container {
+                flex-direction:column;
+                text-align:center;
+                align-items:flex-start;
+            }
+            .nav-menu {
+                flex-wrap:wrap;
+                justify-content:center;
+            }
+            .post-actions { justify-content:flex-start; }
+        }
+    </style>
+    <base target="_blank">
+</head>
+<body class="theme-dark">
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <span class="lang-en">AgroSocialMedia</span>
+                <span class="lang-hi">कृषिसामाजिक</span>
+                <span class="lang-te">వ్యవసాయ సామాజిక</span>
+                <span class="lang-ka">ಕೃಷಿ ಸಾಮಾಜಿಕ</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a class="nav-item active" href="farmer.html">
+                    <i class="fas fa-home"></i>
+                    <span class="lang-en">Home</span>
+                    <span class="lang-hi">होम</span>
+                    <span class="lang-te">హోమ్</span>
+                    <span class="lang-ka">ಹೋಮ್</span>
+                </a>
+                <a class="nav-item" href="irrigation.html">
+                    <i class="fas fa-tint"></i>
+                    <span class="lang-en">Irrigation</span>
+                    <span class="lang-hi">सिंचाई</span>
+                    <span class="lang-te">నీటిపారుదల</span>
+                    <span class="lang-ka">ನೀರಾವರಿ</span>
+                </a>
+                <a class="nav-item" href="harvest.html">
+                    <i class="fas fa-tractor"></i>
+                    <span class="lang-en">Harvest</span>
+                    <span class="lang-hi">फसल</span>
+                    <span class="lang-te">పంట</span>
+                    <span class="lang-ka">ಅಭಿವೃದ್ಧಿ</span>
+                </a>
+                <a class="nav-item" href="community.html">
+                    <i class="fas fa-users"></i>
+                    <span class="lang-en">Community</span>
+                    <span class="lang-hi">समुदाय</span>
+                    <span class="lang-te">సముదాయం</span>
+                    <span class="lang-ka">ಸಮುದಾಯ</span>
+                </a>
+            </nav>
+
+            <div class="nav-right">
+                <div class="lang-selector">
+                    <button class="lang-btn active" data-lang="en">English</button>
+                    <button class="lang-btn" data-lang="hi">हिन्दी</button>
+                    <button class="lang-btn" data-lang="te">తెలుగు</button>
+                    <button class="lang-btn" data-lang="ka">ಕನ್ನಡ</button>
+                </div>
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i><span>Night</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar glass-card">
+            <h3>
+                <span class="lang-en">Quick Actions</span>
+                <span class="lang-hi">त्वरित कार्य</span>
+                <span class="lang-te">తక్షణ చర్యలు</span>
+                <span class="lang-ka">ತ್ವರಿತ ಕ್ರಿಯೆಗಳು</span>
+            </h3>
+            
+            <a class="sidebar-item" href="share.html">
+                <i class="fas fa-plus-circle"></i>
+                <span class="lang-en">Share Experience</span>
+                <span class="lang-hi">अनुभव साझा करें</span>
+                <span class="lang-te">అనుభవాన్ని పంచుకోండి</span>
+                <span class="lang-ka">ಅನುಭವವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</span>
+            </a>
+            <a class="sidebar-item" href="question.html">
+                <i class="fas fa-question-circle"></i>
+                <span class="lang-en">Ask Question</span>
+                <span class="lang-hi">सवाल पूछें</span>
+                <span class="lang-te">ప్రశ్న అడగండి</span>
+                <span class="lang-ka">ಪ್ರಶ್ನೆ ಕೇಳಿ</span>
+            </a>
+            <a class="sidebar-item" href="irrigation.html">
+                <i class="fas fa-calendar-alt"></i>
+                <span class="lang-en">Irrigation Schedule</span>
+                <span class="lang-hi">सिंचाई अनुसूची</span>
+                <span class="lang-te">నీటిపారుదల షెడ్యూల్</span>
+                <span class="lang-ka">ನೀರಾವರಿ ವೇಳಾಪಟ್ಟಿ</span>
+            </a>
+            <a class="sidebar-item" href="photo.html">
+                <i class="fas fa-camera"></i>
+                <span class="lang-en">Photo Share</span>
+                <span class="lang-hi">फोटो साझा करें</span>
+                <span class="lang-te">ఫోటో షేర్</span>
+                <span class="lang-ka">ಫೋಟೋ ಹಂಚಿಕೊಳ್ಳಿ</span>
+            </a>
+            <a class="sidebar-item" href="local.html">
+                <i class="fas fa-map-marker-alt"></i>
+                <span class="lang-en">Local Farmers</span>
+                <span class="lang-hi">स्थानीय किसान</span>
+                <span class="lang-te">స్థానిక రైతులు</span>
+                <span class="lang-ka">ಸ್ಥಳೀಯ ರೈತರು</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content glass-card">
+            <!-- Post Creator -->
+            <div class="post-creator">
+                <textarea class="post-input" placeholder="Share your farming experience, ask questions, or provide advice..."></textarea>
+                <div class="post-actions">
+                    <button class="action-btn btn-secondary">
+                        <i class="fas fa-image"></i>
+                        <span class="lang-en">Add Photo</span>
+                        <span class="lang-hi">फोटो जोड़ें</span>
+                        <span class="lang-te">ఫోటో జోడించండి</span>
+                        <span class="lang-ka">ಫೋಟೋ ಸೇರಿಸಿ</span>
+                    </button>
+                    <button class="action-btn btn-secondary">
+                        <i class="fas fa-video"></i>
+                        <span class="lang-en">Add Video</span>
+                        <span class="lang-hi">वीडियो जोड़ें</span>
+                        <span class="lang-te">వీడియో జోడించండి</span>
+                        <span class="lang-ka">ವೀಡಿಯೋ ಸೇರಿಸಿ</span>
+                    </button>
+                    <button class="action-btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        <span class="lang-en">Share</span>
+                        <span class="lang-hi">साझा करें</span>
+                        <span class="lang-te">షేర్ చేయండి</span>
+                        <span class="lang-ka">ಹಂಚಿಕೊಳ್ಳಿ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Posts Feed -->
+            <div id="posts-container">
+                <!-- Sample Post 1 -->
+                <div class="post">
+                    <div class="post-header">
+                        <div class="avatar">RM</div>
+                        <div class="post-info">
+                            <h4>Rajesh Kumar</h4>
+                            <div class="time">2 hours ago • Maharashtra</div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <div class="post-text-block">
+                            <p class="lang-en">Just finished harvesting my wheat crop. The new irrigation technique I learned here increased my yield by 30%! Thanks to all farmers who shared their knowledge.</p>
+                            <p class="lang-hi">मैंने अभी अपनी गेहूं की फसल की कटाई पूरी की। यहां सीखी नई सिंचाई तकनीक से मेरी पैदावार 30% बढ़ गई!</p>
+                            <p class="lang-te">నేను నా గోధుమ పంట కోతను పూర్తి చేసాను. ఇక్కడ నేర్చుకున్న కొత్త నీటిపారుదల సాంకేతికత నా దిగుబడిని 30% పెంచింది!</p>
+                            <p class="lang-ka">ನಾನು ನನ್ನ ಗೋಧಿ ಬೆಳೆಯ ಕಟಾವು ಮುಗಿಸಿದೆ. ಇಲ್ಲಿ ಕಲಿತ ನವೀನ ನೀರಾವರಿ ತಂತ್ರಜ್ಞಾನ ನನ್ನ ಇಳುವರಿಯನ್ನು 30% ಹೆಚ್ಚಿಸಿದೆ!</p>
+                        </div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600" alt="Wheat harvest" class="post-image">
+                    <div class="post-tags">
+                        <span class="tag">#WheatHarvest</span>
+                        <span class="tag">#IrrigationTips</span>
+                        <span class="tag">#SuccessStory</span>
+                    </div>
+                    <div class="post-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>24</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comment"></i>
+                            <span>8</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-share"></i>
+                            <span>Share</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Post 2 -->
+                <div class="post">
+                    <div class="post-header">
+                        <div class="avatar">SL</div>
+                        <div class="post-info">
+                            <h4>Sita Lakshmi</h4>
+                            <div class="time">5 hours ago • Andhra Pradesh</div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <div class="post-text-block">
+                            <p class="lang-en">Need advice: My paddy fields are showing yellow spots. Anyone experienced this? Photos attached. Using drip irrigation for first time.</p>
+                            <p class="lang-hi">सलाह चाहिए: मेरे धान के खेतों में पीले धब्बे दिख रहे हैं। किसी को इसका अनुभव है?</p>
+                            <p class="lang-te">సలహా కావాలి: నా వరి పొలాల్లో పసుపు మచ్చలు కనిపిస్తున్నాయి. ఎవరికైనా ఈ అనుభవం ఉందా?</p>
+                            <p class="lang-ka">ಸಲಹೆ ಬೇಕು: ನನ್ನ ಭತ್ತದ ಹೊಲಗಳಲ್ಲಿ ಹಳದಿ ಚುಕ್ಕೆಗಳು ಕಾಣಿಸುತ್ತಿವೆ. ಯಾರಿಗಾದರೂ ಈ ಅನುಭವವಿದೆಯೇ?</p>
+                        </div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600" alt="Paddy field" class="post-image">
+                    <div class="post-tags">
+                        <span class="tag">#PaddyDisease</span>
+                        <span class="tag">#HelpNeeded</span>
+                        <span class="tag">#DripIrrigation</span>
+                    </div>
+                    <div class="post-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>15</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comment"></i>
+                            <span>12</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-share"></i>
+                            <span>Share</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Weather Widget (ENHANCED) -->
+            <div class="widget weather-widget glass-card">
+                <h3>
+                    <span class="lang-en">Weather Update</span>
+                    <span class="lang-hi">मौसम अपडेट</span>
+                    <span class="lang-te">వాతావరణ నవీకరణ</span>
+                    <span class="lang-ka">ಹವಾಮಾನ ನವೀಕರಣ</span>
+                </h3>
+                <div id="weatherDisplay" class="weather-info">
+                    <div class="weather-icon">
+                        <i id="weatherIconEl" class="fas fa-cloud"></i>
+                    </div>
+                    <h4 id="weatherTemp">--°C</h4>
+                    <p id="weatherDesc" style="margin-bottom:0.3rem;">Detecting location...</p>
+                    <p id="weatherLocation" style="font-size:0.9rem;color:var(--text-muted);"></p>
+                    <small id="weatherHumidity" style="display:block;margin-top:0.4rem;color:var(--text-muted);font-size:0.82rem;"></small>
+                </div>
+                <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
+                    <input id="dashboardCityInput" placeholder="Enter city name" 
+                           style="flex:1;padding:0.5rem;border-radius:10px;border:1px solid var(--border-subtle);background:var(--bg-card-soft);color:var(--text-main);font-size:0.85rem;">
+                    <button id="dashboardCityBtn" type="button"
+                            style="padding:0.5rem 1rem;border-radius:999px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-strong));color:#02110a;font-weight:600;cursor:pointer;font-size:0.85rem;">
+                        Get
+                    </button>
+                </div>
+            </div>
+
+            <!-- Knowledge Sharing -->
+            <div class="widget glass-card">
+                <h3>
+                    <span class="lang-en">Today's Tips</span>
+                    <span class="lang-hi">आज के सुझाव</span>
+                    <span class="lang-te">ఈరోజు చిట్కాలు</span>
+                    <span class="lang-ka">ಇಂದಿನ ಸಲಹೆಗಳು</span>
+                </h3>
+                
+                <div class="knowledge-item">
+                    <div class="knowledge-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <strong class="lang-en">Water Saving</strong>
+                        <strong class="lang-hi">पानी बचत</strong>
+                        <strong class="lang-te">నీటి ఆదా</strong>
+                        <strong class="lang-ka">ನೀರಿನ ಉಳಿತಾಯ</strong>
+                        <br>
+                        <small class="lang-en">Use mulching to reduce water evaporation</small>
+                        <small class="lang-hi">पानी के वाष्पीकरण को कम करने के लिए मल्चिंग का उपयोग करें</small>
+                        <small class="lang-te">నీటి బాష్పీభవనాన్ని తగ్గించడానికి మల్చింగ్ ఉపయోగించండి</small>
+                        <small class="lang-ka">ನೀರಿನ বাষ্পೀಭবನವನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಮಲ್ಚಿಂಗ್ ಬಳಸಿ</small>
+                    </div>
+                </div>
+                
+                <div class="knowledge-item">
+                    <div class="knowledge-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div>
+                        <strong class="lang-en">Pest Control</strong>
+                        <strong class="lang-hi">कीट नियंत्रण</strong>
+                        <strong class="lang-te">పీడక నియంత్రణ</strong>
+                        <strong class="lang-ka">ಕೀಟ ನಿಯಂತ್ರಣ</strong>
+                        <br>
+                        <small class="lang-en">Neem oil spray for organic pest control</small>
+                        <small class="lang-hi">जैविक कीट नियंत्रण के लिए नीम का तेल स्प्रे</small>
+                        <small class="lang-te">ఆర్గానిక్ పెస్ట్ కంట్రోల్ కోసం వేప ఆయిల్ స్ప్రే</small>
+                        <small class="lang-ka">ಸಾವಯವ ಕೀಟ ನಿಯಂತ್ರಣಕ್ಕಾಗಿ ಬೇವಿನ ಎಣ್�ೆ ಸ್ಪ್ರೇ</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Farmers -->
+            <div class="widget glass-card">
+                <h3>
+                    <span class="lang-en">Active Farmers</span>
+                    <span class="lang-hi">सक्रिय किसान</span>
+                    <span class="lang-te">సక్రియ రైతులు</span>
+                    <span class="lang-ka">ಸಕ್ರಿಯ ರೈತರು</span>
+                </h3>
+                
+                <div class="knowledge-item">
+                    <div class="avatar small-avatar" style="width: 35px; height: 35px; font-size: 0.8rem;">AK</div>
+                    <div>
+                        <strong>Arjun Kumar</strong>
+                        <br>
+                        <small class="lang-en">Wheat Expert</small>
+                        <small class="lang-hi">गेहूं विशेषज्ञ</small>
+                        <small class="lang-te">గోధుమ నిపుణుడు</small>
+                        <small class="lang-ka">ಗೋಧಿ ತಜ್ಞ</small>
+                    </div>
+                </div>
+                
+                <div class="knowledge-item">
+                    <div class="avatar small-avatar" style="width: 35px; height: 35px; font-size: 0.8rem;">PM</div>
+                    <div>
+                        <strong>Padma Murthy</strong>
+                        <br>
+                        <small class="lang-en">Organic Farming</small>
+                        <small class="lang-hi">जैविक खेती</small>
+                        <small class="lang-te">ఆర్గానిక్ వ్యవసాయం</small>
+                        <small class="lang-ka">ಸಾವಯವ ಕೃಷಿ</small>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Load firebase-config.js BEFORE inline script so OPENWEATHER_API_KEY is available -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // Language Switching: show English by default, hide others
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const langElements = {
+            en: document.querySelectorAll('.lang-en'),
+            hi: document.querySelectorAll('.lang-hi'),
+            te: document.querySelectorAll('.lang-te'),
+            ka: document.querySelectorAll('.lang-ka')
+        };
+
+        function setLanguage(lang) {
+            // hide all
+            Object.values(langElements).forEach(nodes => {
+                nodes.forEach(el => el.style.display = 'none');
+            });
+            // show selected
+            langElements[lang].forEach(el => el.style.display = 'inline');
+        }
+
+        // initial: English only
+        setLanguage('en');
+
+        langButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.lang;
+                langButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                setLanguage(lang);
+            });
+        });
+
+        // Navigation active state
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Post Creation
+        const postInput = document.querySelector('.post-input');
+        const shareBtn = document.querySelector('.btn-primary');
+
+        shareBtn.addEventListener('click', () => {
+            if (postInput.value.trim()) {
+                createPost(postInput.value);
+                postInput.value = '';
+            }
+        });
+
+        function createPost(content) {
+            const postsContainer = document.getElementById('posts-container');
+            const newPost = document.createElement('div');
+            newPost.className = 'post fade-in';
+            
+            newPost.innerHTML = `
+                <div class="post-header">
+                    <div class="avatar">ME</div>
+                    <div class="post-info">
+                        <h4>Me</h4>
+                        <div class="time">Just now • My Farm</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <div class="post-text-block">
+                        <p class="lang-en">${content}</p>
+                    </div>
+                </div>
+                <div class="post-tags">
+                    <span class="tag">#Shared</span>
+                </div>
+                <div class="post-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span>0</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-comment"></i>
+                        <span>0</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </div>
+                </div>
+            `;
+            postsContainer.insertBefore(newPost, postsContainer.firstChild);
+            // ensure language visibility for new post
+            const activeLangBtn = document.querySelector('.lang-btn.active');
+            if (activeLangBtn) setLanguage(activeLangBtn.dataset.lang);
+        }
+
+        // Like functionality
+        document.addEventListener('click', (e) => {
+            const statItem = e.target.closest('.stat-item');
+            if (!statItem) return;
+            const icon = statItem.querySelector('i');
+            const span = statItem.querySelector('span');
+            if (icon && icon.classList.contains('fa-thumbs-up')) {
+                icon.style.color = '#4caf50';
+                span.textContent = parseInt(span.textContent) + 1;
+            }
+        });
+
+        // Knowledge items
+        const knowledgeItems = document.querySelectorAll('.knowledge-item');
+        knowledgeItems.forEach(item => {
+            item.addEventListener('click', () => {
+                alert('Opening detailed information...');
+            });
+        });
+
+        // Simulate real-time updates
+        setInterval(() => {
+            const timeElements = document.querySelectorAll('.time');
+            timeElements.forEach(el => {
+                if (el.textContent.includes('hours ago')) {
+                    const hours = parseInt(el.textContent);
+                    if (hours < 24) {
+                        el.textContent = el.textContent.replace(hours + ' hours', (hours + 1) + ' hours');
+                    }
+                }
+            });
+        }, 3600000);
+
+        // Theme toggle (light / night)
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            body.classList.remove('theme-light', 'theme-dark');
+            body.classList.add(theme);
+            if (theme === 'theme-light') {
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i><span>Night</span>';
+            } else {
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i><span>Light</span>';
+            }
+            localStorage.setItem('raythu-theme', theme);
+        }
+
+        // init from storage
+        const savedTheme = localStorage.getItem('raythu-theme') || 'theme-dark';
+        applyTheme(savedTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const current = body.classList.contains('theme-light') ? 'theme-light' : 'theme-dark';
+            const next = current === 'theme-light' ? 'theme-dark' : 'theme-light';
+            applyTheme(next);
+        });
+
+        // ===== DASHBOARD WEATHER INTEGRATION (OpenWeather) =====
+        const weatherTempEl = document.getElementById('weatherTemp');
+        const weatherDescEl = document.getElementById('weatherDesc');
+        const weatherLocationEl = document.getElementById('weatherLocation');
+        const weatherHumidityEl = document.getElementById('weatherHumidity');
+        const weatherIconEl = document.getElementById('weatherIconEl');
+        const dashboardCityInputEl = document.getElementById('dashboardCityInput');
+        const dashboardCityBtnEl = document.getElementById('dashboardCityBtn');
+
+        // Map OpenWeather icon codes to Font Awesome icons
+        function getWeatherIcon(iconCode) {
+            const iconMap = {
+                '01d': 'fa-sun',
+                '01n': 'fa-moon',
+                '02d': 'fa-cloud-sun',
+                '02n': 'fa-cloud-moon',
+                '03d': 'fa-cloud',
+                '03n': 'fa-cloud',
+                '04d': 'fa-cloud',
+                '04n': 'fa-cloud',
+                '09d': 'fa-cloud-showers-heavy',
+                '09n': 'fa-cloud-showers-heavy',
+                '10d': 'fa-cloud-sun-rain',
+                '10n': 'fa-cloud-moon-rain',
+                '11d': 'fa-bolt',
+                '11n': 'fa-bolt',
+                '13d': 'fa-snowflake',
+                '13n': 'fa-snowflake',
+                '50d': 'fa-smog',
+                '50n': 'fa-smog'
+            };
+            return iconMap[iconCode] || 'fa-cloud';
+        }
+
+        async function fetchDashboardWeather(lat, lon, labelOverride) {
+            try {
+                const res = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}` +
+                    `&units=metric&appid=${OPENWEATHER_API_KEY}`
+                );
+                const data = await res.json();
+                if (!res.ok || !data.main) throw new Error('Weather error');
+
+                const temp = Math.round(data.main.temp);
+                const hum = data.main.humidity;
+                const desc = data.weather && data.weather[0] ? data.weather[0].description : 'Weather';
+                const icon = data.weather && data.weather[0] ? data.weather[0].icon : '01d';
+                const label = labelOverride || data.name || 'Your location';
+
+                // Update UI
+                weatherTempEl.textContent = `${temp}°C`;
+                weatherDescEl.textContent = desc;
+                weatherLocationEl.textContent = label;
+                weatherHumidityEl.textContent = `Humidity ${hum}%`;
+                
+                // Update icon
+                weatherIconEl.className = `fas ${getWeatherIcon(icon)}`;
+            } catch (e) {
+                weatherDescEl.textContent = 'Could not load weather';
+                weatherLocationEl.textContent = 'Please try city name';
+            }
+        }
+
+        async function geocodeDashboardCity(name) {
+            if (!OPENWEATHER_API_KEY) {
+                throw new Error('Missing OpenWeather API key');
+            }
+            const res = await fetch(
+                `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(name)}` +
+                `&limit=1&appid=${OPENWEATHER_API_KEY}`
+            );
+            const data = await res.json();
+            if (!Array.isArray(data) || !data.length) {
+                throw new Error('City not found');
+            }
+            return { lat: data[0].lat, lon: data[0].lon, label: `${data[0].name}, ${data[0].country}` };
+        }
+
+        function initDashboardWeather() {
+            if (!OPENWEATHER_API_KEY) {
+                weatherDescEl.textContent = 'Add API key in firebase-config.js';
+                return;
+            }
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => fetchDashboardWeather(pos.coords.latitude, pos.coords.longitude),
+                    () => {
+                        weatherDescEl.textContent = 'Location blocked';
+                        weatherLocationEl.textContent = 'Enter city manually';
+                    }
+                );
+            } else {
+                weatherDescEl.textContent = 'Geolocation not supported';
+                weatherLocationEl.textContent = 'Enter city manually';
+            }
+        }
+
+        dashboardCityBtnEl.addEventListener('click', async () => {
+            const name = dashboardCityInputEl.value.trim();
+            if (!name) return;
+            weatherDescEl.textContent = 'Loading...';
+            weatherLocationEl.textContent = '';
+            try {
+                const { lat, lon, label } = await geocodeDashboardCity(name);
+                await fetchDashboardWeather(lat, lon, label);
+            } catch (e) {
+                weatherDescEl.textContent = e.message === 'City not found' ? 'City not found' : 'Weather error';
+                weatherLocationEl.textContent = '';
+            }
+        });
+
+        // Initialize weather on page load
+        initDashboardWeather();
+    </script>
+</body>
+</html>
