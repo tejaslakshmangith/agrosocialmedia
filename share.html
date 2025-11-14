@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSocialMedia - Farmers Social Network</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-root">
+    <!-- Top bar -->
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-logo">🌱</div>
+            <div class="brand-text">
+                <span class="brand-name">AgroSocialMedia</span>
+                <span class="brand-tagline">Smart farming. Shared wisdom.</span>
+            </div>
+        </div>
+        <nav class="top-nav">
+            <a href="farmer.html">Farmer Home</a>
+            <a href="share.html" class="active">Share</a>
+            <a href="community.html">Community</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <!-- App shell layout -->
+    <div class="app-shell">
+        <!-- Left rail: navigation + quick stats -->
+        <aside class="side-rail">
+            <div class="side-rail-card">
+                <h2 class="side-title">Navigation</h2>
+                <ul class="side-menu">
+                    <li class="active">🏠 Home Feed</li>
+                    <li>🏆 Contests</li>
+                    <li>📚 Learn & Tips</li>
+                    <li>🌦 Weather & Irrigation</li>
+                </ul>
+            </div>
+            <div class="side-rail-card">
+                <h2 class="side-title">Today’s Snapshot</h2>
+                <ul class="side-metrics">
+                    <li><span>Community Posts</span><strong>Live</strong></li>
+                    <li><span>Active Contests</span><strong>Ongoing</strong></li>
+                    <li><span>Your Weather</span><strong>Syncing</strong></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Center: hero + posting + feed -->
+        <main class="app-main">
+            <!-- Hero -->
+            <section class="hero">
+                <div class="hero-left hero-left-enhanced">
+                    <h1>Empower Every Farmer</h1>
+                    <p>Share field experiences, learn modern practices, and stay ahead with real‑time weather and crop insights.</p>
+                    <div class="hero-badges">
+                        <span class="badge">Crop Tips</span>
+                        <span class="badge">Irrigation Scheduling</span>
+                        <span class="badge">Weather-aware Planning</span>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="hero-card">
+                        <p class="hero-card-title">Today’s Farming Pulse</p>
+                        <ul>
+                            <li><strong>Share</strong> photos & videos from your field</li>
+                            <li><strong>Join</strong> contests & challenges</li>
+                            <li><strong>Discover</strong> trending farming practices</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Posting + contests -->
+            <section class="main-columns">
+                <section class="left-col">
+                    <!-- Post card -->
+                    <section class="card post-card">
+                        <div class="card-header">
+                            <h2>Share Your Farming Experience</h2>
+                            <span class="card-subtitle">Educate other farmers with your real field stories.</span>
+                        </div>
+
+                        <!-- Post form -->
+                        <form id="postForm" class="stack-gap">
+                            <label for="experience" class="field-label">What happened on your farm today?</label>
+                            <div class="field-group">
+                                <textarea id="experience" name="experience" rows="4"
+                                          placeholder="Explain your crop stage, pest issues, fertilizer plan, irrigation schedule, or a new technique you tried..."
+                                          required></textarea>
+                            </div>
+
+                            <div class="field-group attach-row">
+                                <div>
+                                    <label for="media" class="field-label">Attach photo or video (optional)</label>
+                                    <input type="file" id="media" accept="image/*,video/*">
+                                    <p class="hint">High quality field photos, crop close‑ups, irrigation setup, etc.</p>
+                                </div>
+                                <div id="preview" class="preview"></div>
+                            </div>
+
+                            <div class="post-actions">
+                                <button id="postBtn" type="submit" class="btn primary">Publish Post</button>
+                                <span class="post-note">Your post helps farmers in similar climate and crop zones.</span>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Contest creation -->
+                    <section id="contestSection" class="card contest-card">
+                        <div class="card-header">
+                            <h2>Host a Farming Contest</h2>
+                            <span class="card-subtitle">Run photo challenges, best‑yield stories, or irrigation ideas.</span>
+                        </div>
+                        <form id="contestForm" class="grid-2">
+                            <div class="field-group">
+                                <label for="contestTitle" class="field-label">Contest title</label>
+                                <input id="contestTitle" placeholder="Best Paddy Crop Photo" required>
+                            </div>
+                            <div class="field-group">
+                                <label for="contestEnd" class="field-label">End date</label>
+                                <input id="contestEnd" type="date" required>
+                            </div>
+                            <div class="field-group">
+                                <label for="contestPrize" class="field-label">Prize</label>
+                                <input id="contestPrize" placeholder="Organic fertilizer kit" required>
+                            </div>
+                            <div class="field-group align-end">
+                                <button type="submit" class="btn outline">Create Contest</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Feed -->
+                    <section class="card feed-card">
+                        <div class="card-header">
+                            <h2>Community Feed</h2>
+                            <span class="card-subtitle">AI‑ranked posts based on freshness and engagement.</span>
+                        </div>
+                        <div id="feedList" class="feed-list">Loading posts...</div>
+                    </section>
+
+                    <!-- New: Recommended for you, below main feed -->
+                    <section class="card feed-card" id="recommendedSection" style="margin-top:12px;">
+                        <div class="card-header">
+                            <h2>Recommended for You</h2>
+                            <span class="card-subtitle">Posts similar to what you interact with.</span>
+                        </div>
+                        <div id="recommendedList" class="feed-list">AI will suggest posts here as you engage.</div>
+                    </section>
+                </section>
+            </section>
+        </main>
+
+        <!-- Right: weather + education + trending -->
+        <aside class="right-rail">
+            <!-- Weather widget -->
+            <div id="weather" class="card weather-card">
+                <div class="card-header">
+                    <h3>Field Weather Radar</h3>
+                    <span class="card-subtitle">Live conditions for better crop & irrigation decisions.</span>
+                </div>
+                <div id="weatherContent" class="weather-content">Detecting your location...</div>
+                <div class="weather-input-row">
+                    <input id="cityInput" placeholder="Or enter village / city name" />
+                    <button id="cityBtn" class="btn ghost small">Get</button>
+                </div>
+                <p class="hint">Use this to plan irrigation, spraying, and harvesting windows.</p>
+            </div>
+
+            <!-- Education / Learn section -->
+            <section class="card learn-card">
+                <div class="card-header">
+                    <h3>Learn: Smart Farming</h3>
+                    <span class="card-subtitle">Short, practical tips curated for farmers.</span>
+                </div>
+                <div class="learn-list">
+                    <article class="learn-item">
+                        <h4>🌾 Crop Health Snapshot</h4>
+                        <p>Capture clear photos of leaves (top & bottom) and soil zone. This helps experts and other farmers give accurate advice.</p>
+                    </article>
+                    <article class="learn-item">
+                        <h4>💧 Irrigation Scheduling</h4>
+                        <p>Use weather data: avoid irrigation right before expected rain. Aim for early morning or late evening watering.</p>
+                    </article>
+                    <article class="learn-item">
+                        <h4>🌦 Weather-aware Decisions</h4>
+                        <p>Check wind and humidity before spraying. High wind scatters chemicals; high humidity slows evaporation.</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Trending posts -->
+            <div id="trending" class="card trending-card">
+                <div class="card-header">
+                    <h3>Trending Farming Insights</h3>
+                    <span class="card-subtitle">High‑engagement posts from farmers like you.</span>
+                </div>
+                <div id="trendingList" class="trending-list">Loading...</div>
+            </div>
+        </aside>
+    </div>
+
+    <footer class="app-footer">
+        <p>&copy; 2025 AgroSocialMedia. All rights reserved.</p>
+        <p class="footer-note">Designed for real farmers, agronomists, and rural communities.</p>
+        <p class="footer-note">This project is owned by Teja Lakshman.</p>
+    </footer>
+
+    <!-- Firebase SDKs (compat for brevity) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+    <!-- Your config (replace placeholders) -->
+    <script src="firebase-config.js"></script>
+
+    <!-- App logic -->
+    <script src="app.js"></script>
+</body>
+</html>

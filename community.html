@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Community Hub - AgroSocialMedia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== THEME TOKENS ===== */
+        :root {
+            --bg-main: #06141f;
+            --bg-main-alt: #020b12;
+            --bg-card: rgba(3,12,24,0.95);
+            --bg-card-soft: rgba(2,10,18,0.98);
+            --text-main: #e8f5e9;
+            --text-muted: #b0bec5;
+            --accent: #66bb6a;
+            --accent-strong: #43a047;
+            --accent-soft: rgba(129,199,132,0.16);
+            --border-subtle: rgba(255,255,255,0.12);
+        }
+
+        body.theme-light {
+            --bg-main: #e8f5e9;
+            --bg-main-alt: #f5f7fa;
+            --bg-card: rgba(255,255,255,0.95);
+            --bg-card-soft: #ffffff;
+            --text-main: #263238;
+            --text-muted: #607d8b;
+            --accent: #2e7d32;
+            --accent-strong: #43a047;
+            --accent-soft: rgba(56,142,60,0.12);
+            --border-subtle: rgba(0,0,0,0.08);
+        }
+
+        /* ===== GLOBAL RESET & BASE ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(56,142,60,0.18), transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(3,155,229,0.18), transparent 55%),
+                linear-gradient(135deg, var(--bg-main), var(--bg-main-alt) 45%, #040912);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        body::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            pointer-events:none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size:38px 38px;
+            opacity:0.35;
+            mix-blend-mode:soft-light;
+            z-index:-1;
+        }
+
+        /* ===== HEADER / NAV ===== */
+        .header {
+            background: linear-gradient(120deg, rgba(56,142,60,0.96), rgba(129,199,132,0.9));
+            color:#fdfdfd;
+            padding:0.9rem 0;
+            box-shadow:0 12px 30px rgba(0,0,0,0.55);
+            position:sticky; top:0; z-index:1000;
+            backdrop-filter:blur(18px);
+        }
+        .nav-container {
+            max-width:1180px; margin:0 auto;
+            display:flex; justify-content:space-between; align-items:center;
+            flex-wrap:wrap; gap:0.75rem; padding:0 1.2rem;
+        }
+        .logo { font-size:1.6rem; font-weight:700; display:flex; align-items:center; gap:0.6rem; }
+        .logo i {
+            padding:0.45rem; border-radius:999px;
+            background:rgba(255,255,255,0.22);
+            box-shadow:0 0 18px rgba(255,255,255,0.35);
+        }
+        .nav-menu { display:flex; gap:1.3rem; align-items:center; }
+        .nav-item {
+            cursor:pointer; padding:0.4rem 1.1rem; border-radius:999px;
+            transition:all 0.25s ease;
+            display:flex; align-items:center; gap:0.45rem;
+            font-size:0.98rem; text-decoration:none; color:inherit;
+            background:rgba(255,255,255,0.06);
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color:rgba(255,255,255,0.25);
+            transform:translateY(-1px);
+            box-shadow:0 8px 22px rgba(0,0,0,0.22);
+        }
+
+        .nav-right {
+            display:flex; align-items:center; gap:0.6rem;
+        }
+
+        .lang-selector { display:flex; gap:0.4rem; }
+        .lang-btn {
+            padding:0.3rem 0.85rem;
+            border:1px solid rgba(255,255,255,0.8);
+            background:transparent; color:#ffffff;
+            border-radius:999px; cursor:pointer;
+            font-size:0.86rem; transition:all 0.25s ease;
+        }
+        .lang-btn:hover, .lang-btn.active { background:#ffffff; color:#388e3c; }
+
+        /* Theme toggle */
+        .theme-toggle {
+            padding:0.3rem 0.8rem;
+            border-radius:999px;
+            border:1px solid rgba(255,255,255,0.8);
+            background:rgba(255,255,255,0.12);
+            color:#ffffff;
+            cursor:pointer;
+            font-size:0.86rem;
+            display:flex; align-items:center; gap:0.4rem;
+            transition:all 0.25s ease;
+        }
+        .theme-toggle:hover {
+            background:#ffffff;
+            color:#388e3c;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .page-shell{
+            max-width:1100px;margin:1.8rem auto 2.2rem;padding:0 1.2rem;
+        }
+        .grid-2{
+            display:grid;
+            grid-template-columns:1.4fr 1fr;
+            gap:1.4rem;
+        }
+        .glass-card{
+            background:radial-gradient(circle at top left,rgba(255,255,255,0.08),var(--bg-card));
+            border-radius:18px;padding:1.6rem 1.5rem;
+            box-shadow:0 18px 36px rgba(0,0,0,0.55);
+            border:1px solid var(--border-subtle);backdrop-filter:blur(18px);
+        }
+        h1{margin-bottom:0.4rem;font-size:1.7rem;}
+        h2{margin-bottom:0.4rem;font-size:1.3rem;}
+        p{color:var(--text-muted);margin-bottom:0.9rem;}
+        .challenge-list,.room-list{list-style:none;padding:0;margin:0;}
+        .challenge-item,.room-item{
+            padding:0.7rem 0.6rem;border-bottom:1px solid var(--border-subtle);
+            display:flex;flex-direction:column;gap:0.2rem;
+        }
+        .challenge-item:last-child,.room-item:last-child{border-bottom:none;}
+        .badge{
+            display:inline-block;padding:0.2rem 0.7rem;border-radius:999px;
+            background:var(--accent-soft);color:var(--accent);font-size:0.78rem;
+        }
+        .meta{font-size:0.85rem;color:var(--text-muted);}
+        .join-btn{
+            align-self:flex-start;margin-top:0.3rem;padding:0.35rem 0.9rem;
+            border-radius:999px;border:1px solid var(--accent);background:transparent;
+            color:var(--accent);font-size:0.85rem;cursor:pointer;
+        }
+        .join-btn:hover{background:var(--accent-soft);}
+
+        @media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body class="theme-dark">
+<header class="header">
+    <div class="nav-container">
+        <div class="logo"><i class="fas fa-seedling"></i><span>AgroSocialMedia</span></div>
+        <nav class="nav-menu">
+            <a class="nav-item" href="farmer.html"><i class="fas fa-home"></i>Home</a>
+            <a class="nav-item" href="irrigation.html"><i class="fas fa-tint"></i>Irrigation</a>
+            <a class="nav-item" href="harvest.html"><i class="fas fa-tractor"></i>Harvest</a>
+            <a class="nav-item active" href="community.html"><i class="fas fa-users"></i>Community</a>
+        </nav>
+        <div class="nav-right">
+            <button id="themeToggle" class="theme-toggle">
+                <i class="fas fa-moon"></i><span>Night</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="page-shell">
+    <section class="grid-2">
+        <div class="glass-card">
+            <h1>Community Challenges</h1>
+            <p>Join friendly challenges to share best practices and inspire other farmers.</p>
+            <ul class="challenge-list">
+                <li class="challenge-item">
+                    <div><span class="badge">Photo</span> Best Drip Irrigation Layout</div>
+                    <div class="meta">Share a photo of your drip setup and mention crop + spacing.</div>
+                    <button class="join-btn">View & Join</button>
+                </li>
+                <li class="challenge-item">
+                    <div><span class="badge">Story</span> Highest Yield Story</div>
+                    <div class="meta">Explain practices that helped you increase yield this season.</div>
+                    <button class="join-btn">View & Join</button>
+                </li>
+                <li class="challenge-item">
+                    <div><span class="badge">Tip</span> Zero-Burn Residue Management</div>
+                    <div class="meta">Share how you manage crop residues without burning.</div>
+                    <button class="join-btn">View & Join</button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="glass-card">
+            <h2>Knowledge Rooms</h2>
+            <p>Topic-wise discussion rooms moderated by experienced farmers.</p>
+            <ul class="room-list">
+                <li class="room-item">
+                    <div><strong>🌾 Paddy & Wheat Zone</strong></div>
+                    <div class="meta">Varieties, pest issues, irrigation and fertilizer scheduling.</div>
+                    <button class="join-btn">Enter Room</button>
+                </li>
+                <li class="room-item">
+                    <div><strong>🥕 Vegetables & Fruits</strong></div>
+                    <div class="meta">Drip fertigation, micronutrients, protected cultivation.</div>
+                    <button class="join-btn">Enter Room</button>
+                </li>
+                <li class="room-item">
+                    <div><strong>🌱 Organic & Natural Farming</strong></div>
+                    <div class="meta">Bio-inputs, neem-based sprays, soil health improvement.</div>
+                    <button class="join-btn">Enter Room</button>
+                </li>
+            </ul>
+        </div>
+    </section>
+</main>
+
+<script>
+    // theme toggle same as other pages
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const body = document.body;
+    function applyTheme(theme){
+        body.classList.remove('theme-light','theme-dark');
+        body.classList.add(theme);
+        if(theme==='theme-light'){
+            themeToggleBtn.innerHTML='<i class="fas fa-moon"></i><span>Night</span>';
+        }else{
+            themeToggleBtn.innerHTML='<i class="fas fa-sun"></i><span>Light</span>';
+        }
+        localStorage.setItem('raythu-theme',theme);
+    }
+    const savedTheme = localStorage.getItem('raythu-theme') || 'theme-dark';
+    applyTheme(savedTheme);
+    themeToggleBtn.addEventListener('click',()=>{
+        const current = body.classList.contains('theme-light')?'theme-light':'theme-dark';
+        const next = current==='theme-light'?'theme-dark':'theme-light';
+        applyTheme(next);
+    });
+
+    // placeholder action for join buttons
+    document.querySelectorAll('.join-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>alert('In a real app this would open the challenge/room.'));
+    });
+</script>
+</body>
+</html>
