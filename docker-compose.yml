@@ -1,0 +1,70 @@
+version: "3.9"
+
+# Shared environment variables for Firebase configuration.
+# Copy .env.example to .env and fill in your values before running.
+x-firebase-env: &firebase-env
+  FIREBASE_API_KEY: ${FIREBASE_API_KEY:-YOUR_FIREBASE_API_KEY}
+  FIREBASE_AUTH_DOMAIN: ${FIREBASE_AUTH_DOMAIN:-YOUR_PROJECT.firebaseapp.com}
+  FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-YOUR_PROJECT_ID}
+  FIREBASE_MESSAGING_SENDER_ID: ${FIREBASE_MESSAGING_SENDER_ID:-SENDER_ID}
+  FIREBASE_APP_ID: ${FIREBASE_APP_ID:-APP_ID}
+  OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY:-}
+
+services:
+  # ──────────────────────────────────────────────
+  # Development service – mounts source files so
+  # changes are visible without rebuilding.
+  # ──────────────────────────────────────────────
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: agrosocialmedia:dev
+    container_name: agrosocialmedia-dev
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *firebase-env
+    volumes:
+      # Hot-reload: mount HTML/JS/CSS directly into the container
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - ./app.js:/usr/share/nginx/html/app.js:ro
+      - ./firebase-config.js:/usr/share/nginx/html/firebase-config.js
+      - ./style.css:/usr/share/nginx/html/style.css:ro
+      - ./community.html:/usr/share/nginx/html/community.html:ro
+      - ./harvest.html:/usr/share/nginx/html/harvest.html:ro
+      - ./irrigation.html:/usr/share/nginx/html/irrigation.html:ro
+      - ./local.html:/usr/share/nginx/html/local.html:ro
+      - ./photo.html:/usr/share/nginx/html/photo.html:ro
+      - ./question.html:/usr/share/nginx/html/question.html:ro
+      - ./share.html:/usr/share/nginx/html/share.html:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ──────────────────────────────────────────────
+  # Production service – fully built, no mounts.
+  # ──────────────────────────────────────────────
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: agrosocialmedia:latest
+    container_name: agrosocialmedia-prod
+    ports:
+      - "80:8080"
+    environment:
+      <<: *firebase-env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
